@@ -1,4 +1,5 @@
 import { Noto_Sans_Thai } from "next/font/google";
+import SiteHeader from "@/components/SiteHeader";
 import "./globals.css";
 
 const notoSansThai = Noto_Sans_Thai({
@@ -21,6 +22,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="th">
       <body className={notoSansThai.variable}>
+        <SiteHeader />
         {children}
       </body>
     </html>

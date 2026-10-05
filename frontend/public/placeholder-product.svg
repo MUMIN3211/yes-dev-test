@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800" role="img" aria-label="No product image">
+  <rect width="800" height="800" fill="#f3ece6"/>
+  <g fill="none" stroke="#c9b8aa" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">
+    <rect x="320" y="200" width="160" height="70" rx="16"/>
+    <path d="M300 270h200a30 30 0 0 1 30 30v270a30 30 0 0 1-30 30H300a30 30 0 0 1-30-30V300a30 30 0 0 1 30-30z"/>
+    <path d="M330 380h140M330 430h100"/>
+  </g>
+</svg>
