@@ -10,3 +10,13 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+### Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+### Env
+.env
+.env.local
+!.env.example
