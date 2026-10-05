@@ -1,0 +1,104 @@
+.back {
+  display: inline-block;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.back:hover {
+  color: var(--foreground);
+}
+
+.layout {
+  display: grid;
+  gap: 20px;
+}
+
+.imageWrap {
+  aspect-ratio: 1 / 1;
+  border-radius: var(--radius);
+  overflow: hidden;
+  background: var(--placeholder-bg);
+  border: 1px solid var(--border);
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+}
+
+.category {
+  font-size: 0.8rem;
+  color: var(--accent);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+.name {
+  margin: 4px 0 2px;
+  font-size: 1.5rem;
+  line-height: 1.3;
+}
+
+.sku {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.priceRow {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin: 14px 0 6px;
+}
+
+.price {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.size {
+  color: var(--muted);
+}
+
+.section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.section h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.section p {
+  margin: 0;
+  white-space: pre-line;
+}
+
+@media (min-width: 768px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+
+  .imageWrap {
+    position: sticky;
+    top: 80px;
+  }
+
+  .name {
+    font-size: 2rem;
+  }
+}
