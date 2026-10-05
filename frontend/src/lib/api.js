@@ -1,7 +1,7 @@
 // Thin wrapper around the FastAPI backend. Every page talks to the backend
 // through here — the frontend never calls Supabase directly.
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export class ApiError extends Error {
   constructor(message, status) {
@@ -21,7 +21,9 @@ function messageFrom(detail, fallback) {
 export async function request(path, { token, body, method, ...options } = {}) {
   const headers = { ...options.headers };
   if (token) headers.Authorization = `Bearer ${token}`;
-  if (body !== undefined) headers["Content-Type"] = "application/json";
+  // FormData (file uploads) sets its own multipart Content-Type with the boundary
+  const isForm = body instanceof FormData;
+  if (body !== undefined && !isForm) headers["Content-Type"] = "application/json";
 
   let res;
   try {
@@ -32,7 +34,7 @@ export async function request(path, { token, body, method, ...options } = {}) {
       ...options,
       method: method ?? (body !== undefined ? "POST" : "GET"),
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body: body === undefined || isForm ? body : JSON.stringify(body),
     });
   } catch {
     throw new ApiError("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้", 503);

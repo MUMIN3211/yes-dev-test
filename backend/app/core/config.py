@@ -22,6 +22,9 @@ class Settings(BaseSettings):
     jwt_expire_minutes: int = 480
     # Base URL of the Next.js app. Supabase invitation emails link back to {frontend_url}/invite
     frontend_url: str = "http://localhost:3000"
+    # Base URL that printed QR codes point to. Defaults to frontend_url; set it to a
+    # LAN IP / public domain so a phone can open the scanned link.
+    qr_base_url: str | None = None
 
     @model_validator(mode="after")
     def reject_placeholders(self) -> "Settings":
@@ -36,6 +39,10 @@ class Settings(BaseSettings):
         if missing:
             raise ValueError(f"backend/.env still has placeholder values for: {', '.join(missing)}")
         return self
+
+    @property
+    def public_site_url(self) -> str:
+        return (self.qr_base_url or self.frontend_url).rstrip("/")
 
     @property
     def cors_origin_list(self) -> list[str]:

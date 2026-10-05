@@ -2,6 +2,7 @@ from fastapi import HTTPException, status
 
 from app.repositories.product_repository import ProductRepository
 from app.schemas.product import PublicProduct, PublicProductList
+from app.services.qr_service import QrFormat, render_qr
 
 
 class ProductService:
@@ -19,3 +20,8 @@ class ProductService:
             # Inactive products are treated as not found on public pages
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Product not found")
         return PublicProduct(**row)
+
+    def get_public_qr(self, sku: str, fmt: QrFormat, scale: int) -> bytes:
+        # get_public raises 404 for unknown and inactive products
+        product = self.get_public(sku)
+        return render_qr(product.sku, fmt, scale)

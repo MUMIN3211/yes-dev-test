@@ -78,3 +78,10 @@
   cursor: pointer;
   white-space: nowrap;
 }
+
+/* QR sheet and other pages print without the back-office bar */
+@media print {
+  .bar {
+    display: none;
+  }
+}
