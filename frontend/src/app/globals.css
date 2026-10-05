@@ -8,6 +8,7 @@
   --on-accent: #ffffff;
   --placeholder-bg: #f3ece6;
   --danger: #b3261e;
+  --success: #2e7d4f;
 
   --radius: 14px;
   --shadow: 0 6px 20px rgba(43, 37, 34, 0.08);
@@ -26,6 +27,7 @@
     --on-accent: #1a1715;
     --placeholder-bg: #2c2724;
     --danger: #f2b8b5;
+    --success: #8fd4a8;
     --shadow: 0 6px 20px rgba(0, 0, 0, 0.35);
   }
 }

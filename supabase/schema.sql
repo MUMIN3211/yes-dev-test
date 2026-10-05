@@ -1,7 +1,6 @@
 -- Luma Skin Care — database schema (Supabase / PostgreSQL)
 -- Run this in Supabase Dashboard -> SQL Editor.
--- Feature 1 needs only the `products` table. Tables for later features
--- (admins, invitations, scan_logs) will be added when those features start.
+-- Safe to re-run: every statement is idempotent.
 
 create extension if not exists "pgcrypto";
 
@@ -66,3 +65,53 @@ create trigger products_normalize_status
 -- The FastAPI backend talks to Supabase with the service_role key, so RLS is
 -- enabled with no public policies: the browser can never read/write directly.
 alter table public.products enable row level security;
+
+-- ---------------------------------------------------------------------------
+-- admins  (Feature 2)
+-- Passwords and invitation emails are handled by Supabase Auth (auth.users).
+-- This table adds what Supabase Auth does not know about: the back-office role
+-- and whether the account may log in. There is no sign-up page: the first
+-- super_admin is created with backend/scripts/create_super_admin.py, every
+-- other account comes from a super_admin invitation.
+--   super_admin : everything an admin can do + manage admin accounts
+--   admin       : manage products (import, edit, images, QR)
+-- activated_at is null while the invitation has not been accepted yet.
+-- ---------------------------------------------------------------------------
+create table if not exists public.admins (
+    id             uuid primary key references auth.users (id) on delete cascade,
+    email          text not null unique check (email = lower(email)),
+    role           text not null default 'admin' check (role in ('super_admin', 'admin')),
+    is_active      boolean not null default true,
+    invited_by     uuid references public.admins (id) on delete set null,
+    invited_at     timestamptz,
+    activated_at   timestamptz,
+    last_login_at  timestamptz,
+    created_at     timestamptz not null default now(),
+    updated_at     timestamptz not null default now()
+);
+
+-- Migration from the first Feature 2 draft (own bcrypt passwords + invitation table)
+drop table if exists public.admin_invitations;
+alter table public.admins drop column if exists password_hash;
+alter table public.admins add column if not exists invited_at timestamptz;
+alter table public.admins add column if not exists activated_at timestamptz;
+delete from public.admins a where not exists (select 1 from auth.users u where u.id = a.id);
+alter table public.admins alter column id drop default;
+do $$
+begin
+    if not exists (
+        select 1 from pg_constraint
+        where conrelid = 'public.admins'::regclass and conname = 'admins_id_fkey'
+    ) then
+        alter table public.admins
+            add constraint admins_id_fkey foreign key (id) references auth.users (id) on delete cascade;
+    end if;
+end;
+$$;
+
+drop trigger if exists admins_set_updated_at on public.admins;
+create trigger admins_set_updated_at
+    before update on public.admins
+    for each row execute function public.set_updated_at();
+
+alter table public.admins enable row level security;

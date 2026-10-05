@@ -26,3 +26,12 @@
   font-weight: 400;
   color: var(--accent);
 }
+
+.adminLink {
+  font-size: 0.8rem;
+  color: var(--muted);
+}
+
+.adminLink:hover {
+  color: var(--foreground);
+}

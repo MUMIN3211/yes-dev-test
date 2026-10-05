@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "mailtrap": {
+      "command": "node",
+      "args": ["tools/mcp-mailtrap.mjs"]
+    }
+  }
+}
