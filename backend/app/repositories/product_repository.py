@@ -2,6 +2,7 @@ from supabase import Client
 
 TABLE = "products"
 PUBLIC_COLUMNS = "sku, name, category, price, size, description, how_to_use, image_url"
+ADMIN_COLUMNS = f"{PUBLIC_COLUMNS}, status, updated_at"
 # Columns an Excel import writes. image_url is not one of them, so re-importing
 # never removes a product's photo.
 IMPORT_COLUMNS = "sku, name, category, price, size, description, how_to_use, status"
@@ -42,6 +43,13 @@ class ProductRepository:
         return rows[0] if rows else None
 
     # --- back office ---------------------------------------------------------
+
+    def list_all(self) -> list[dict]:
+        return self.client.table(TABLE).select(ADMIN_COLUMNS).order("sku").execute().data
+
+    def get_by_sku(self, sku: str) -> dict | None:
+        rows = self.client.table(TABLE).select(ADMIN_COLUMNS).eq("sku", sku).limit(1).execute().data
+        return rows[0] if rows else None
 
     def get_import_fields_by_skus(self, skus: list[str]) -> dict[str, dict]:
         found: dict[str, dict] = {}

@@ -6,10 +6,16 @@ import { logoutAction } from "@/app/admin/actions";
 import { ROLE_LABELS } from "@/lib/roles";
 import styles from "./AdminNav.module.css";
 
+// "/admin" only matches itself; other links also match their sub-pages
+function isActive(pathname, href) {
+  return href === "/admin" ? pathname === href : pathname === href || pathname.startsWith(`${href}/`);
+}
+
 export default function AdminNav({ admin }) {
   const pathname = usePathname();
   const links = [
     { href: "/admin", label: "ภาพรวม" },
+    { href: "/admin/products", label: "สินค้า" },
     // Only Super Admin can manage users
     ...(admin.role === "super_admin" ? [{ href: "/admin/users", label: "จัดการผู้ใช้" }] : []),
   ];
@@ -22,7 +28,7 @@ export default function AdminNav({ admin }) {
             <Link
               key={link.href}
               href={link.href}
-              className={pathname === link.href ? styles.linkActive : styles.link}
+              className={isActive(pathname, link.href) ? styles.linkActive : styles.link}
             >
               {link.label}
             </Link>

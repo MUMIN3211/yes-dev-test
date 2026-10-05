@@ -15,10 +15,10 @@ export default async function AdminHomePage() {
       </p>
 
       <div className={styles.cards}>
-        <div className={styles.card}>
-          <h2>จัดการสินค้า</h2>
-          <p>นำเข้าสินค้าจาก Excel แก้ไขข้อมูล อัปโหลดรูป และสร้าง QR (เปิดใช้งานในขั้นถัดไป)</p>
-        </div>
+        <Link href="/admin/products" className={styles.card}>
+          <h2>จัดการสินค้า →</h2>
+          <p>ดูสินค้าทั้งหมดพร้อม QR ของแต่ละชิ้น และนำเข้าสินค้าจากไฟล์ Excel</p>
+        </Link>
 
         {isSuperAdmin && (
           <Link href="/admin/users" className={styles.card}>

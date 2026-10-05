@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Any, Literal
 
 from pydantic import BaseModel
@@ -20,6 +21,22 @@ class PublicProduct(BaseModel):
 
 class PublicProductList(BaseModel):
     items: list[PublicProduct]
+    total: int
+
+
+ProductStatus = Literal["active", "inactive"]
+
+
+class AdminProduct(PublicProduct):
+    """Back-office view: every product (inactive too) plus the URL its QR code encodes."""
+
+    status: ProductStatus
+    updated_at: datetime
+    qr_url: str
+
+
+class AdminProductList(BaseModel):
+    items: list[AdminProduct]
     total: int
 
 

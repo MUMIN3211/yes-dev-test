@@ -58,6 +58,7 @@ uvicorn app.main:app --reload --port 8000
 | `CORS_ORIGINS` | URL ของ frontend คั่นด้วย `,` |
 | `JWT_SECRET` | สตริงสุ่มยาว ๆ สำหรับเซ็น token (สร้างด้วย `python -c "import secrets; print(secrets.token_urlsafe(48))"`) |
 | `FRONTEND_URL` | URL ของ frontend ใช้สร้างลิงก์ในอีเมลคำเชิญ (`{FRONTEND_URL}/invite`) ต้องเพิ่มใน Redirect URLs ของ Supabase ด้วย |
+| `QR_BASE_URL` | (ไม่บังคับ) URL ที่ QR ชี้ไป ถ้าว่างใช้ `FRONTEND_URL` ตั้งเป็น IP ในวง LAN (เช่น `http://192.168.1.10:3000`) เพื่อทดสอบสแกนด้วยมือถือ ควรตั้งให้ถูกก่อนพิมพ์ QR |
 
 - API: http://localhost:8000
 - Swagger docs: http://localhost:8000/docs
@@ -109,7 +110,7 @@ npm run dev
 | 1 | Landing Page: แสดงสินค้าสาธารณะ + หน้าสินค้าจาก QR | ✅ เสร็จ |
 | 2 | Authentication Login (Admin / Super Admin) | ✅ เสร็จ |
 | 3 | Add Product (Import Excel) | ✅ เสร็จ |
-| 4 | Generate QR Code | ⏳ ยังไม่เริ่ม |
+| 4 | Generate QR Code | ✅ เสร็จ |
 | 5 | Edit Product (ข้อมูล, รูปภาพ) | ⏳ ยังไม่เริ่ม |
 | 6 | Adjust QR Code (สีพื้นหลัง, ดาวน์โหลด PNG) | ⏳ ยังไม่เริ่ม |
 
@@ -139,6 +140,12 @@ npm run dev
 | `luma_products.xlsx` | 30 (ข้ามแถวว่าง 1 แถว) | 21 | 9: ไม่มีชื่อ (แถว 6), ราคา "ราคาพิเศษ" (9), SKU LS-1004 ซ้ำ (12), ไม่มี SKU (15), ราคาติดลบ (17), status "yes" (20), category "Lotion" (23), ไม่มี category (30), ไม่มี category + ราคา 0 (31) |
 | `luma_products_update.xlsx` | 6 | 5 (อัปเดต 3: LS-1001 ราคาและคำอธิบาย, LS-1003 ขนาดและคำอธิบาย, LS-1010 → inactive / เพิ่มใหม่ 2) | 1: ไม่มีชื่อ (แถว 7) |
 
+**Feature 4 ประกอบด้วย**
+- สินค้าทุกชิ้นมี QR ทันทีที่ถูกนำเข้า QR เก็บแค่ URL `{QR_BASE_URL}/products/{sku}?src=qr`
+- หน้า `/admin/products` แสดงสินค้าทั้งหมด (รวม inactive) พร้อม QR ของแต่ละชิ้น ดาวน์โหลด QR เป็น PNG ได้
+- หน้า `/admin/products/qr-sheet` รวม QR ทุกชิ้นพร้อม SKU และชื่อ สำหรับพิมพ์ทีเดียว (4 อันต่อแถว)
+- API: `GET /api/admin/products`, `GET /api/admin/products/{sku}/qr?format=png|svg&scale=1-40`
+
 **สิทธิ์ของแต่ละ Role**
 
 | ทำอะไรได้ | Admin | Super Admin |
@@ -157,6 +164,7 @@ npm run dev
 | ไม่ได้ระบุคอลัมน์รูปภาพและเวลา | เพิ่ม `id` (uuid), `image_url`, `created_at`, `updated_at` | เตรียมไว้สำหรับ Feature 5 (อัปโหลดรูป) และใช้ติดตามการแก้ไข |
 | ตาราง `admins` มีคอลัมน์ `password` | ไม่เก็บรหัสผ่านในตาราง `admins` แต่ให้ Supabase Auth (`auth.users`) เก็บแทน | Supabase Auth hash และจัดการรหัสผ่านให้ ส่วนตาราง `admins` เก็บแค่ role และสถานะ โดย `id` อ้างอิง `auth.users` |
 | ระบุ "Authentication -> Users -> Add user" ของ Supabase | ใช้ Supabase Auth ส่งอีเมลคำเชิญและตรวจรหัสผ่าน แต่ทุกการเรียกยังผ่าน FastAPI ซึ่งออก JWT ของตัวเองที่มี role อยู่ข้างใน | ใช้ระบบส่งอีเมลจริงและการจัดการรหัสผ่านของ Supabase โดยยังคงลำดับการทำงาน Next.js → FastAPI → Supabase ตามแผน และตรวจ role/สถานะจากตาราง `admins` ได้ทุก request |
+| "สร้าง QR ให้สินค้าแต่ละชิ้นหลังนำเข้า" | ไม่ได้เก็บไฟล์ QR แต่สร้างรูป QR จาก SKU ทุกครั้งที่ขอ (library `segno`) | QR เก็บแค่ URL ที่มาจาก SKU จึงได้ผลเหมือนเดิมทุกครั้ง ไม่ต้องมีตารางหรือ Storage เพิ่ม และ Feature 6 (เปลี่ยนสี/ขนาด) แค่เพิ่ม parameter |
 | ไม่ได้ระบุสถานะคำเชิญ | เพิ่มคอลัมน์ `invited_by`, `invited_at`, `activated_at` ในตาราง `admins` | ถ้า `activated_at` ว่าง แปลว่ายังไม่ได้กดลิงก์ตั้งรหัสผ่าน (คำเชิญรอยืนยัน) และยังเข้าสู่ระบบไม่ได้ |
 
 ## สมมติฐานและข้อตัดสินใจ
@@ -176,6 +184,9 @@ npm run dev
 - **SKU ซ้ำในไฟล์เดียวกัน:** ใช้แถวแรกและปฏิเสธแถวถัดไป (เช่น LS-1004 แถว 12 "Calm Cica Toner Refill" มีชื่อและราคาต่างจากแถว 5 จึงไม่ควรเดาว่าแถวไหนถูก)
 - **Excel คือข้อมูลหลักตอน import:** แถวที่ถูกต้องจะเขียนทับทุกคอลัมน์ในไฟล์ (ช่องว่างใน Excel = ค่าว่าง) ยกเว้นรูปภาพ ส่วนสินค้าที่ไม่อยู่ในไฟล์จะไม่ถูกลบหรือแก้ไข
 - **แถวที่ไม่มีอะไรเปลี่ยน** จะไม่ถูกเขียนลง database (`updated_at` ไม่เปลี่ยน)
+- **QR มี `?src=qr` ต่อท้าย:** ใช้แยกการเปิดจากการสแกน QR ออกจากการเปิดหน้าเว็บปกติ สำหรับบันทึกการสแกน (ลำดับที่ 10) ปุ่ม "เปิดหน้าสินค้า" ในหลังบ้านจึงไม่ใส่ parameter นี้
+- **QR ของสินค้า inactive ยังสร้างได้:** สแกนแล้วจะเห็นหน้า "ไม่พบสินค้านี้" และกลับมาใช้ได้เมื่อเปลี่ยนเป็น active
+- **รูป QR ต้องผ่าน token:** `<img>` แนบ header ไม่ได้ จึงให้ Next.js route `/admin/products/{sku}/qr` อ่าน cookie แล้วเรียก FastAPI แทน
 - **Backend ใช้ service_role key:** ทุกตารางเปิด RLS ไว้แต่ไม่มี policy ให้ public ดังนั้นเข้าถึงข้อมูลได้ผ่าน FastAPI ทางเดียว
 
 ## การใช้ AI
