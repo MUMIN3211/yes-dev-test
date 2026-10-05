@@ -44,35 +44,63 @@ Feature ที่จะมีในเว็บไซต์ :
 - Database : Supabase (PostgreSQL)
 - ลำดับการทำงาน : หน้าเว็บ Next.js -> เรียก FastAPI -> อ่านเขียนจาก Supabase
 
-ตาราง luma_products และ luma_products_update (Supabase)
-- id uuid pk
-- sku text unqie
-- category text
-- price numberic
-- size text
-- description text
-- how_to_use text
-- status boolean
+## Phrase 2
+Flow Working
+เวลที่เหลือ 3.30 ชั่วโมง :
+1. 14.30 - 15.30 น. ชั่วโมงแรกจะทำ 
+- Feature 1 : Landing Page (Show pulic every product)
+- Feature 2 : Authentication Login (Role : Admin และ Super Admin)
+
+2. 15.30 - 16.30 น. จะทำ
+- Feature 3 : Add Product (Import Excel)
+- Feature 4 : Generate QR Code (Add Every Product)
+
+3. 16.30 - 17.00 น. จะทำ
+- Feature 5 : Edit Product (Edit QR,Description,Upload picture produc)
+- Feature 6 : Adjust QR Code (Can change background color & can Download png)
+
+4. 17.00 - 17.30 น. จะทำ README สรุปงานตามหัวข้อกำหนด
+
+ถ้าหากเวลาไม่พอ จะตัด Feature 6 ออกก่อนเป็น optional 
+### ข้อมูลที่ต้องเก็บ
+ตาราง luma_products และ luma_products_update (Supabase) Column Form
+- sku numberic (รหัสสินค้า ไม่ซ้ำกัน รูปแบบ LS-0000)
+- name text (ชื่อสินค้า)
+- category text (Cleanser, Toner, Serum, Moisturizer, Sunscreen หรือ Mask)
+- price numberic (ราคาเป็นบาท มากกว่า 0)
+- size text (เช่น 30 ml, 50 g)
+- description text (รายละเอียดสินค้า)
+- how_to_use text (วิธีใช้)
+- status text (active หรือ inactive ถ้าว่างถือเป็น active สินค้า inactive ไม่แสดงบนหน้าสาธารณะ)
 
 ตาราง Admins และ Super Admin
 - id uuid pk
 - email text unique
+- password text
 - role text
 - is_active boolean
 Authentication -> Users -> Add user
 หากพลาดในส่วนไหนไปสามารถทำการแก้ไขหรือทำเพิ่มได้
 
+Contraints PNG :
+- จำนวนรูป (1 รูปหลักต่อสินค้า (หลายรูปทำได้ถ้ามีเวลา))
+- ประเภทไฟล์ (JPG, PNG หรือ WEBP)
+- ขนาดไฟล์ (ไม่เกิน 2 MB)
+- สัดส่วนที่แนะนำ (สี่เหลี่ยมจัตุรัส อย่างน้อย 800 × 800 px)
+- ไฟล์ผิดเงื่อนไข (ระบบต้องปฏิเสธและบอกเหตุผลให้ผู้ใช้เข้าใจ) 
+- สินค้าที่ยังไม่มีรูป (หน้าสาธารณะต้องแสดงผลได้ปกติ เช่น ใช้รูปแทน (placeholder))
 
-## Phrase 2
-เวลที่เหลือ 4 ชั่วโมง :
-1. 14.00 - 15.00 น. ชั่วโมงแรกจะทำ 
-- Feature 1 : Landing Page (Show pulic every product)
-- Feature 2 : Authentication Login (Role : Admin และ Super Admin)
-
-2. 15.00 - 16.00 น. จะทำ
-- Feature 3 : Add Product (Import Excel)
-- Feature 4 : Generate QR Code (Add Every Product)
-
-3. 16.00 - 17.00 น. จะทำ
-- Feature 5 : Edit Product (Edit QR,Description,Upload picture produc)
-- Feature 6 : Adjust QR Code (Can change background color & can Download png)
+อื่นๆ 
+- PLAN.md ต้องมี
+Flow การทำงานของระบบ ตั้งแต่ Admin นำเข้า Excel จนลูกค้าสแกน QR (เขียนหรือวาดก็ได้)
+ข้อมูลที่ต้องเก็บ แบ่งเป็นตารางอะไรบ้าง แต่ละตารางมีข้อมูลอะไร
+ลำดับงานที่จะทำ และเวลาโดยประมาณของแต่ละงาน
+ถ้าเวลาไม่พอ จะตัดฟีเจอร์ไหนออกก่อน เพราะอะไร
+สมมติฐานหรือข้อตัดสินใจที่ต้องทำเอง เพราะโจทย์ไม่ได้ระบุไว้
+(ถ้าหากขาดตกหรือเขียนไม่ครบสามารถไปอัพเดทที่ README แทนที่จะแก้ไข Plan.md เพิ่ม โดนบอกว่าต่างจากแผนงานเดิมยังไง แล้วเหตุผลที่ต้องเปลี่ยน)
+- README.md ต้องมี
+วิธีติดตั้งและรันระบบ พร้อมบัญชี Super Admin สำหรับทดสอบ
+Tech stack ที่เลือก และเหตุผลที่เลือก
+ฟีเจอร์ที่ทำเสร็จ และที่ไม่เสร็จ
+สิ่งที่ต่างจากแผนงาน และเหตุผลที่เปลี่ยน
+การใช้ AI: ใช้ทำอะไรบ้าง, ตัวอย่าง prompt อย่างน้อย 3 ตัวอย่าง, AI ผิดพลาดตรงไหนและแก้อย่างไร, ส่วนไหนเขียนเองทั้งหมด
