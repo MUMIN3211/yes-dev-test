@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Any, Literal
 
 from pydantic import BaseModel
 
@@ -21,3 +21,45 @@ class PublicProduct(BaseModel):
 class PublicProductList(BaseModel):
     items: list[PublicProduct]
     total: int
+
+
+# --- Excel import (Feature 3) ---------------------------------------------------
+
+ImportAction = Literal["create", "update", "unchanged"]
+
+
+class FieldChange(BaseModel):
+    field: str
+    old: Any = None
+    new: Any = None
+
+
+class ImportRow(BaseModel):
+    """A valid row and what importing it does to the database."""
+
+    row: int
+    sku: str
+    name: str
+    action: ImportAction
+    changes: list[FieldChange] = []
+
+
+class ImportIssue(BaseModel):
+    """`row` is the Excel row number (the header is row 1)."""
+
+    row: int
+    sku: str | None = None
+    messages: list[str]
+
+
+class ImportResult(BaseModel):
+    dry_run: bool
+    file_name: str
+    total_rows: int
+    created: int
+    updated: int
+    unchanged: int
+    failed: int
+    rows: list[ImportRow]
+    errors: list[ImportIssue]
+    warnings: list[ImportIssue]
