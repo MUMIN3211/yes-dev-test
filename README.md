@@ -143,6 +143,7 @@ npm run dev
 **Feature 4 ประกอบด้วย**
 - สินค้าทุกชิ้นมี QR ทันทีที่ถูกนำเข้า QR เก็บแค่ URL `{QR_BASE_URL}/products/{sku}?src=qr`
 - หน้า `/admin/products` แสดงสินค้าทั้งหมด (รวม inactive) พร้อม QR ของแต่ละชิ้น ดาวน์โหลด QR เป็น PNG ได้
+- หน้าแรก (landing page) การ์ดสินค้าแต่ละชิ้นมีกล่อง QR เล็ก ๆ ที่มุมรูป สแกนแล้วเปิดหน้าสินค้านั้นได้เลย (ใช้ `GET /api/public/products/{sku}/qr` ซึ่งให้เฉพาะสินค้า active และไม่ต้อง login เพราะ QR มีแค่ URL สาธารณะ)
 - หน้า `/admin/products/qr-sheet` รวม QR ทุกชิ้นพร้อม SKU และชื่อ สำหรับพิมพ์ทีเดียว (4 อันต่อแถว)
 - API: `GET /api/admin/products`, `GET /api/admin/products/{sku}/qr?format=png|svg&scale=1-40`
 

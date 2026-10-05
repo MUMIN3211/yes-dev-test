@@ -19,6 +19,7 @@
 }
 
 .imageWrap {
+  position: relative;
   aspect-ratio: 1 / 1;
   background: var(--placeholder-bg);
 }
@@ -28,6 +29,27 @@
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+/* Small scannable QR in the image corner. Always dark-on-white (also in dark
+   mode) and with the QR's own quiet zone, so phone cameras can read it. */
+.qr {
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  width: 72px;
+  height: 72px;
+  padding: 2px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+@media (min-width: 640px) {
+  .qr {
+    width: 84px;
+    height: 84px;
+  }
 }
 
 .body {
