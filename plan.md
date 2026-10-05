@@ -1,0 +1,78 @@
+# Luma Skin Care
+เป้าหมาย : ระบบจัดการสินค้า Skin Care โดยการนำข้อมูล EXCEL และจะสร้าง QR แต่ละชิ้น เมื่อสแกน QR นั้นจะเห็นหน้าเว็บของสินค้าตัวนี้น (มีแค่เฉพาะ ADMIN และ SUPER ADMIN=>จะเป็นคนคอยกำหนด Role ของ User ไหนที่ต้องการเป็น Admin)
+
+## Pharse 1
+ผู้ใช้เมื่อเปิดเว็บไซต์แล้วสามารถ
+- จะเห็นรายการทั้งหมดของสินค้าแต่ละชิ้น
+- เพิ่มสินค้าจากการ Import จาก Excel 
+- สินค้าแต่ละชิ้นจะมี QR เป็นของตัวเอง
+- แก้ไขรูปภาพในแต่ละสินค้า อัปโหลดรูปภาพ สร้าง QR code ของตัวสินค้า ปรับแต่ง QR(เปลี่ยนสีพื้นหลัง และ Downlaod เป็นไฟล์ png ได้)
+- เก็บ Log ทุกครั้งหากมีคตนเปิดหน้าสินค้าจาก QR และแสดงสินค้าโดยเรียงลำดับจากมากสุดไปต่ำสุด
+- เมื่อเข้าระบบ USER จะถูกกำหนดเป็น ADMIN โดยจะต้องถูกส่งผ่าน SUPER ADMIN ก่อน
+
+Feature ที่จะมีในเว็บไซต์ :
+1. Feature 1 : Landing Page (Show pulic every product)
+2. Feature 2 : Authentication Login (Role : Admin และ Super Admin)
+3. Feature 3 : Add Product (Import Excel)
+4. Feature 4 : Generate QR Code (Add Every Product)
+5. Feature 5 : Edit Product (Edit QR,Description,Upload picture produc)
+6. Feature 6 : Adjust QR Code (Can change background color & can Download png)
+
+เรียงลำดับความสำคัญตอนเริ่มงาน :
+- 1.หน้าสินค้าสาธารณะ: สแกน QR แล้วเห็นหน้าเว็บข้อมูลสินค้า ใช้งานบนมือถือได้ดี
+- 2.Login ของ Admin: เข้าหลังบ้านได้เฉพาะผู้มีบัญชี ไม่มีหน้าสมัครสมาชิก
+- 3.แยกสิทธิ์ผู้ใช้: มี 2 role คือ Super Admin และ Admin ต่างกันตามที่ผู้สอบออกแบบ แต่ Super Admin เท่านั้นที่เพิ่มผู้ใช้ได้
+- 4.เชิญ Admin ทางอีเมล: Super Admin เพิ่ม Admin ใหม่ ระบบส่งอีเมลให้ผู้ถูกเชิญยืนยันและตั้งรหัสผ่านเอง (ใช้ Mailtrap หรือบันทึกอีเมลลง log แทนการส่งจริงได้)
+- 5.Import Excel: นำเข้าสินค้าจากไฟล์ Excel ที่ให้ไว้ พร้อมแจ้งแถวที่ข้อมูลไม่ถูกต้อง
+- 6.แก้ไขข้อมูลสินค้า: แก้ไขข้อมูลได้โดย QR ที่พิมพ์ไปแล้วยังใช้งานได้และแสดงข้อมูลใหม่
+- 7.อัปโหลดรูปสินค้า: เพิ่มรูปให้สินค้าในหน้าแก้ไขสินค้า
+- 8.สร้าง QR: สร้าง QR ให้สินค้าแต่ละชิ้นหลังนำเข้า
+- 9.ปรับแต่ง QR: เปลี่ยนสีพื้นหลังและขนาด แล้วดาวน์โหลดเป็นไฟล์รูปได้
+- 10.บันทึกการสแกน: เก็บ log ทุกครั้งที่มีคนเปิดหน้าสินค้าจาก QR และแสดงสินค้าที่ถูกดูมากที่สุด
+
+เอกสารสินค้าจะทำการ Import ข้อมูลสินค้าทั้งหมด :
+- Excel 2 ไฟล์ ไฟล์แรกใช้นำเข้าสินค้าครั้งแรก ไฟล์ที่สองใช้ทดสอบการนำเข้าซ้ำหลังจากสร้าง QR ไปแล้ว ไฟล์เหล่านี้จำลองข้อมูลจริงจากลูกค้า จึงมีบางแถวที่ข้อมูลไม่ถูกต้อง ให้เปิดดูข้อมูลก่อนเขียนแผนไฟล์
+ใช้เมื่อ
+- luma_products.xlsx
+นำเข้าสินค้าครั้งแรก (ประมาณ 30 แถว)
+- luma_products_update.xlsx
+นำเข้าครั้งที่สอง หลังจากสร้าง QR แล้ว
+
+เครื่องมือ Tools :
+- Frontend : Next.js (React) + Javascript + CSS
+- Backend : FastAPI (Python)
+- Database : Supabase (PostgreSQL)
+- ลำดับการทำงาน : หน้าเว็บ Next.js -> เรียก FastAPI -> อ่านเขียนจาก Supabase
+
+ตาราง luma_products และ luma_products_update (Supabase)
+- id uuid pk
+- sku text unqie
+- category text
+- price numberic
+- size text
+- description text
+- how_to_use text
+- status boolean
+
+ตาราง Admins และ Super Admin
+- id uuid pk
+- email text unique
+- role text
+- is_active boolean
+Authentication -> Users -> Add user
+หากพลาดในส่วนไหนไปสามารถทำการแก้ไขหรือทำเพิ่มได้
+
+
+## Phrase 2
+เวลที่เหลือ 4 ชั่วโมง :
+1. 14.00 - 15.00 น. ชั่วโมงแรกจะทำ 
+- Feature 1 : Landing Page (Show pulic every product)
+- Feature 2 : Authentication Login (Role : Admin และ Super Admin)
+
+2. 15.00 - 16.00 น. จะทำ
+- Feature 3 : Add Product (Import Excel)
+- Feature 4 : Generate QR Code (Add Every Product)
+
+3. 16.00 - 17.00 น. จะทำ
+- Feature 5 : Edit Product (Edit QR,Description,Upload picture produc)
+- Feature 6 : Adjust QR Code (Can change background color & can Download png)
